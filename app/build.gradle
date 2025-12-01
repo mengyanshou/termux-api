@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     namespace "com.termux.api"
@@ -8,7 +8,8 @@ android {
     def apkVersionTag = System.getenv("TERMUX_API_APP__BUILD__APK_VERSION_TAG") ?: ""
 
     defaultConfig {
-        applicationId "com.termux.api"
+        // Lin:Change to library not to have applicationId set here
+        // applicationId "com.termux.api"
         minSdk project.properties.minSdkVersion.toInteger()
         targetSdk project.properties.targetSdkVersion.toInteger()
         versionCode 1002
@@ -33,7 +34,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            // Lin: do not use minification, because this is a library module
+            minifyEnabled false
             shrinkResources false // Reproducible builds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
@@ -45,18 +47,19 @@ android {
 
     compileOptions {
         // Flag to enable support for the new language APIs
-        coreLibraryDesugaringEnabled true
+        // Lin: Remove as we are using Java 11
+        // coreLibraryDesugaringEnabled true
 
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
 
-    applicationVariants.all { variant ->
-        variant.outputs.all { output ->
-            outputFileName = new File("termux-api-app_" +
-                    (apkVersionTag ? apkVersionTag : "v" + versionName + "+" + variant.buildType.name) + ".apk")
-        }
-    }
+    // applicationVariants.all { variant ->
+    //     variant.outputs.all { output ->
+    //         outputFileName = new File("termux-api-app_" +
+    //                 (apkVersionTag ? apkVersionTag : "v" + versionName + "+" + variant.buildType.name) + ".apk")
+    //     }
+    // }
 
     packagingOptions {
         // Remove terminal-emulator and termux-shared JNI libs added via termux-shared dependency
@@ -66,7 +69,8 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.1.5"
+    // Lin: Disabled as we are using Java 11
+    // coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.1.5"
 
     implementation "com.google.android.material:material:1.12.0"
     implementation "androidx.biometric:biometric:1.2.0-alpha05"
